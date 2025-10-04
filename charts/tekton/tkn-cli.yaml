@@ -1,0 +1,108 @@
+# 1. ServiceAccount
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tekton-cli
+  namespace: dev
+---
+# 2. ClusterRole (Tekton + kubectl 권한 포함)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tekton-cli-cluster-role
+rules:
+  # Tekton 리소스
+  - apiGroups: ["tekton.dev"]
+    resources: ["pipelineruns", "pipelines", "tasks", "taskruns", "clustertasks"]
+    verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
+
+  # Kubernetes core 리소스 (kubectl용)
+  - apiGroups: [""]
+    resources:
+      - pods
+      - pods/log
+      - services
+      - configmaps
+      - secrets
+      - namespaces
+      - events
+      - persistentvolumeclaims
+      - endpoints
+    verbs: ["get", "list", "watch"]
+
+  # Kubernetes apps 리소스 (kubectl용)
+  - apiGroups: ["apps"]
+    resources:
+      - deployments
+      - replicasets
+      - statefulsets
+      - daemonsets
+    verbs: ["get", "list", "watch"]
+
+  # Optional: Tekton Triggers 권한 (필요시)
+  - apiGroups: ["triggers.tekton.dev"]
+    resources:
+      - eventlisteners
+      - triggerbindings
+      - triggertemplates
+      - triggers
+    verbs: ["get", "list", "watch"]
+---
+# 3. ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tekton-cli-cluster-rolebinding
+subjects:
+  - kind: ServiceAccount
+    name: tekton-cli
+    namespace: dev
+roleRef:
+  kind: ClusterRole
+  name: tekton-cli-cluster-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# 4. PersistentVolumeClaim (nfs-csi, 1Gi)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tekton-cli-workspace
+  namespace: dev
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: nfs-csi
+---
+# 5. Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tkn-cli
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tkn-cli
+  template:
+    metadata:
+      labels:
+        app: tkn-cli
+    spec:
+      serviceAccountName: tekton-cli
+      containers:
+        - name: tkn-cli
+          image: tkn-cli:v1
+          command: ["/bin/bash", "-c", "--"]
+          args: ["while true; do sleep 3600; done"]
+          workingDir: /workspace
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+      volumes:
+        - name: workspace
+          persistentVolumeClaim:
+            claimName: tekton-cli-workspace

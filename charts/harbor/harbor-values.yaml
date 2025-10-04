@@ -1,0 +1,13 @@
+expose:
+  tls:
+    certSource: secret
+    secret:
+      secretName: "harbor-ingress-tls"
+  ingress:
+    hosts:
+      core: harbor.local
+    className: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+      traefik.ingress.kubernetes.io/router.tls: "true"
+externalURL: https://harbor.local

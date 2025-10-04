@@ -1,0 +1,72 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: buildah
+spec:
+  params:
+    - name: git-repo-name 
+      default: kw-mvn
+    - name: git-branch
+      default: main
+    - name: insecure-registry
+      default: "true"
+    - name: git-url
+    - name: image-url 
+    - name: gitops-repo-name
+    - name: gitops-branch
+    - name: argo-app-name
+    - name: build-stage
+      default: "dev"
+  workspaces:
+    - name: source 
+    - name: gitops 
+  tasks:
+    - name: generate-id
+      taskRef:
+        name: generate-build-id
+      params:
+        - name: base-version
+          value: $(params.build-stage)
+    - name: clone-sources
+      taskRef:
+        name: git-clone
+      params:
+        - name: url
+          value: $(params.git-url)/$(params.git-repo-name)
+        - name: revision
+          value: $(params.git-branch)
+      workspaces:
+        - name: output
+          workspace: source
+    - name: build-image
+      taskRef:
+        name: buildah
+      runAfter:
+        - clone-sources
+      params:
+        - name: IMAGE
+          value: $(params.image-url)/$(params.git-repo-name):$(tasks.generate-id.results.build-id)
+      workspaces:
+        - name: source
+          workspace: source
+    - name: deploy
+      taskRef:
+        name: deploy
+      runAfter:
+        - build-image
+      params:
+        - name: argo-app-name
+          value: $(params.argo-app-name)
+        - name: gitops-url
+          value: $(params.git-url)/$(params.gitops-repo-name) 
+        - name: gitops-revision
+          value: $(params.gitops-branch) 
+        - name: deploy-manifest
+          value: $(params.build-stage)/kustomization.yaml
+        - name: image-url
+          value: $(params.image-url)
+        - name: build-id
+          value: $(tasks.generate-id.results.build-id)
+      workspaces:
+        - name: gitops
+          workspace: gitops

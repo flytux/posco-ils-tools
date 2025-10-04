@@ -1,0 +1,35 @@
+replicaCount: 1
+
+image:
+  repository: harbor.local/library/code
+  pullPolicy: Always
+  tag: "jdk21"
+
+service:
+  type: ClusterIP
+  port: 8443
+
+ingress:
+  enabled: true
+  className: "traefik"
+  annotations: {}
+  hosts:
+    - host: code.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: 
+    - secretName: code-tls
+      hosts:
+        - code.local
+
+volumes: 
+- name: workspace
+  persistentVolumeClaim:
+    claimName: code
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: 
+- name: workspace
+  mountPath: "/config/workspace"
+  readOnly: false

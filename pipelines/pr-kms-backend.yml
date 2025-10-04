@@ -1,0 +1,32 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: kms-backend-pipeline-
+spec:
+  serviceAccountName: sa-pipeline-runner
+  pipelineRef:
+    name: buildah
+  params:
+  - name: build-stage
+    value: dev
+  - name: git-repo-name
+    value: kms-backend
+  - name: git-branch
+    value: main
+  - name: git-url
+    value: "http://gitea-http.gitea:3000/argo"
+  - name: image-url
+    value: "harbor.local/library"
+  - name: gitops-repo-name
+    value: kms-backend-deploy
+  - name: gitops-branch
+    value: main
+  - name: argo-app-name
+    value: dev-kms-backend
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: pvc-build
+    subPath: $(context.pipelineRun.name)
+  - name: gitops
+    emptyDir: {}

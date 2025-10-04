@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    stage: dev
+    app: ils-server
+  name: dev-ils-server
+  namespace: argocd
+spec:
+  destination:
+    namespace: dev
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: dev
+    repoURL: https://gitea.local/argo/ils-backend-deploy
+    targetRevision: main
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

@@ -1,0 +1,38 @@
+deployment:
+  env:
+    - name: GITEA__webhook__ALLOWED_HOST_LIST
+      value: '*'
+
+valkey-cluster:
+  enabled: false
+valkey:
+  enabled: false
+postgresql:
+  enabled: false
+postgresql-ha:
+  enabled: false
+
+gitea:
+  config:
+    database:
+      DB_TYPE: sqlite3
+    session:
+      PROVIDER: memory
+    cache:
+      ADAPTER: memory
+    queue:
+      TYPE: level
+
+ingress:
+  enabled: true
+  className: "nginx"
+  pathType: Prefix
+  hosts:
+    - host: gitea.local
+      paths:
+        - path: /
+  tls: 
+    - secretName: gitea-tls
+      hosts:
+        - gitea.local
+

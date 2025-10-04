@@ -1,0 +1,197 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    stage: dev
+    app: ils-backend
+    service: ils
+  name: dev-ils-backend
+  namespace: argocd
+spec:
+  destination:
+    namespace: ils-ns
+    server: https://192.168.111.11:6443 
+  project: default
+  source:
+    path: dev
+    repoURL: http://gitea.local/argo/ils-backend-deploy
+    targetRevision: main
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    stage: dev
+    app: ils-frontend
+    service: ils
+  name: dev-ils-frontend
+  namespace: argocd
+spec:
+  destination:
+    namespace: ils-ns
+    server: https://192.168.111.11:6443 
+  project: default
+  source:
+    path: dev
+    repoURL: http://gitea.local/argo/ils-frontend-deploy
+    targetRevision: main
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    stage: dev
+    app: kms-backend
+    service: kms
+  name: dev-kms-backend
+  namespace: argocd
+spec:
+  destination:
+    namespace: kms-ns
+    server: https://192.168.111.11:6443 
+  project: default
+  source:
+    path: dev
+    repoURL: http://gitea.local/argo/kms-backend-deploy
+    targetRevision: main
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    stage: dev
+    app: kms-frontend
+    service: kms
+  name: dev-kms-frontend
+  namespace: argocd
+spec:
+  destination:
+    namespace: kms-ns
+    server: https://192.168.111.11:6443 
+  project: default
+  source:
+    path: dev
+    repoURL: http://gitea.local/argo/kms-frontend-deploy
+    targetRevision: main
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    stage: dev
+    app: lms-backend
+    service: lms
+  name: dev-lms-backend
+  namespace: argocd
+spec:
+  destination:
+    namespace: lms-ns
+    server: https://192.168.111.11:6443 
+  project: default
+  source:
+    path: dev
+    repoURL: http://gitea.local/argo/lms-backend-deploy
+    targetRevision: main
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    stage: dev
+    app: lms-frontend
+    service: lms
+  name: dev-lms-frontend
+  namespace: argocd
+spec:
+  destination:
+    namespace: lms-ns
+    server: https://192.168.111.11:6443 
+  project: default
+  source:
+    path: dev
+    repoURL: http://gitea.local/argo/lms-frontend-deploy
+    targetRevision: main
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    stage: dev
+    app: batch-deployment
+    service: batch
+  name: dev-batch-deployment
+  namespace: argocd
+spec:
+  destination:
+    namespace: batch-ns
+    server: https://192.168.111.11:6443 
+  project: default
+  source:
+    path: dev
+    repoURL: http://gitea.local/argo/batch-deployment-deploy
+    targetRevision: main
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    stage: dev
+    app: app-backend
+    service: app
+  name: dev-app-backend
+  namespace: argocd
+spec:
+  destination:
+    namespace: app-ns
+    server: https://192.168.111.11:6443 
+  project: default
+  source:
+    path: dev
+    repoURL: http://gitea.local/argo/app-backend-deploy
+    targetRevision: main
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    stage: dev
+    app: app-frontend
+    service: app
+  name: dev-app-frontend
+  namespace: argocd
+spec:
+  destination:
+    namespace: app-ns
+    server: https://192.168.111.11:6443 
+  project: default
+  source:
+    path: dev
+    repoURL: http://gitea.local/argo/app-frontend-deploy
+    targetRevision: main
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

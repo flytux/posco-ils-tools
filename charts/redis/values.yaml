@@ -1,0 +1,11 @@
+global:
+  redis:
+    password: "wldn0901"
+image:
+  registry: docker.io
+  repository: bitnamilegacy/redis
+  tag: 8.2.1-debian-12-r0
+
+## @param architecture Redis(R) architecture. Allowed values: `standalone` or `replication`
+##
+architecture: standalone
